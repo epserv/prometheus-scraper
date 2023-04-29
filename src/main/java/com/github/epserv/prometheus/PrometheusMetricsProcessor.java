@@ -5,6 +5,8 @@ import java.io.InputStream;
 import com.github.epserv.prometheus.types.*;
 import org.jboss.logging.Logger;
 import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A processor is responsible for iterating over a collection of metric families found in a specific
@@ -13,22 +15,15 @@ import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
 public abstract class PrometheusMetricsProcessor<T> {
     private static final Logger log = Logger.getLogger(PrometheusMetricsProcessor.class);
 
-    private final InputStream inputStream;
-    private final PrometheusMetricsWalker walker;
+    private final @NotNull InputStream inputStream;
+    private final @NotNull PrometheusMetricsWalker walker;
 
     /**
      * @param inputStream where the Prometheus metrics are that the walker will traverse.
      * @param theWalker the actual object that will be notified about the metrics as they are encountered
      */
-    public PrometheusMetricsProcessor(InputStream inputStream, PrometheusMetricsWalker theWalker) {
-        if (inputStream == null) {
-            throw new IllegalArgumentException("Stream must not be null");
-        }
+    public PrometheusMetricsProcessor(@NotNull InputStream inputStream, @NotNull PrometheusMetricsWalker theWalker) {
         this.inputStream = inputStream;
-
-        if (theWalker == null) {
-            throw new IllegalArgumentException("Walker must not be null");
-        }
         this.walker = theWalker;
     }
 
@@ -59,23 +54,10 @@ public abstract class PrometheusMetricsProcessor<T> {
 
                 for (Metric metric : convertedMetricFamily.getMetrics()) {
                     switch (convertedMetricFamily.getType()) {
-                        case COUNTER:
-                            walker.walkCounterMetric(convertedMetricFamily, (Counter) metric, metricIndex);
-                            break;
-
-                        case GAUGE:
-                            walker.walkGaugeMetric(convertedMetricFamily, (Gauge) metric, metricIndex);
-                            break;
-
-                        case SUMMARY:
-                            walker.walkSummaryMetric(convertedMetricFamily,
-                                    ((Summary) metric), metricIndex);
-                            break;
-
-                        case HISTOGRAM:
-                            walker.walkHistogramMetric(convertedMetricFamily,
-                                    ((Histogram) metric), metricIndex);
-                            break;
+                        case COUNTER -> walker.walkCounterMetric(convertedMetricFamily, (Counter) metric, metricIndex);
+                        case GAUGE -> walker.walkGaugeMetric(convertedMetricFamily, (Gauge) metric, metricIndex);
+                        case SUMMARY -> walker.walkSummaryMetric(convertedMetricFamily, (Summary) metric, metricIndex);
+                        case HISTOGRAM -> walker.walkHistogramMetric(convertedMetricFamily, (Histogram) metric, metricIndex);
                     }
 
                     metricIndex++;
@@ -98,14 +80,16 @@ public abstract class PrometheusMetricsProcessor<T> {
     /**
      * @return the input stream where the metric family data in a specific data format is found
      */
-    protected InputStream getInputStream() {
+    @Contract(pure = true)
+    protected @NotNull InputStream getInputStream() {
         return inputStream;
     }
 
     /**
      * @return the object that will iterate over the found metric data
      */
-    protected PrometheusMetricsWalker getWalker() {
+    @Contract(pure = true)
+    protected @NotNull PrometheusMetricsWalker getWalker() {
         return walker;
     }
 
@@ -113,7 +97,7 @@ public abstract class PrometheusMetricsProcessor<T> {
      * @return a new parser instance that can be used to parse the formatted data
      *         found in the {@link #getInputStream() input stream}.
      */
-    protected abstract PrometheusMetricDataParser<T> createPrometheusMetricDataParser();
+    protected abstract @NotNull PrometheusMetricDataParser<T> createPrometheusMetricDataParser();
 
     /**
      * This method converts the metrics from the specific data format found in the input stream
@@ -122,5 +106,5 @@ public abstract class PrometheusMetricsProcessor<T> {
      * @param metricFamily the metric family (and its metrics) that need to be converted
      * @return the common MetricFamily object
      */
-    protected abstract MetricFamily convert(T metricFamily);
+    protected abstract @NotNull MetricFamily convert(@NotNull T metricFamily);
 }

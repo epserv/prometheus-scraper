@@ -12,7 +12,7 @@ import com.github.epserv.prometheus.walkers.XMLPrometheusMetricsWalker;
 /**
  * This is a command line utility that can scrape a Prometheus protocol endpoint and outputs the metric data it finds.
  * You provide a single required argument on the command line - the URL of the Prometheus protocol endpoint, which is
- * typically something like "http://localhost:9090/metrics".
+ * typically something like <code>http://localhost:9090/metrics</code>.
  */
 public class PrometheusScraperCli {
 
@@ -51,23 +51,12 @@ public class PrometheusScraperCli {
             throw new Exception("Specify the URL of the Prometheus protocol endpoint.");
         }
 
-        PrometheusMetricsWalker walker;
-        switch (walkerType) {
-            case SIMPLE:
-                walker = new SimplePrometheusMetricsWalker(url);
-                break;
-            case XML:
-                walker = new XMLPrometheusMetricsWalker(url);
-                break;
-            case JSON:
-                walker = new JSONPrometheusMetricsWalker();
-                break;
-            case LOG:
-                walker = new LoggingPrometheusMetricsWalker(Level.INFO);
-                break;
-            default:
-                throw new Exception("Invalid walker type: " + walkerType);
-        }
+        PrometheusMetricsWalker walker = switch (walkerType) {
+            case SIMPLE -> new SimplePrometheusMetricsWalker(url);
+            case XML -> new XMLPrometheusMetricsWalker(url);
+            case JSON -> new JSONPrometheusMetricsWalker();
+            case LOG -> new LoggingPrometheusMetricsWalker(Level.INFO);
+        };
 
         PrometheusScraper scraper = new PrometheusScraper(url);
         scraper.scrape(walker);

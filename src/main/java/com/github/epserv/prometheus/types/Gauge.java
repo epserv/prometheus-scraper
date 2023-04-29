@@ -2,7 +2,7 @@ package com.github.epserv.prometheus.types;
 
 public class Gauge extends Metric {
 
-    public static class Builder extends Metric.Builder<Builder> {
+    public static class Builder extends Metric.Builder<Gauge, Builder> {
         private double value = Double.NaN;
 
         public Gauge build() {

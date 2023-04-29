@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus;
+package org.hawkular.agent.prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class HistogramTest {
         Histogram histogram;
 
         try {
-            histogram = new Histogram.Builder().build();
+            new Histogram.Builder().build();
             Assert.fail("Should have thrown exception because name is not set");
         } catch (IllegalArgumentException expected) {
         }
@@ -38,10 +38,10 @@ public class HistogramTest {
         Assert.assertEquals(123, histogram.getSampleCount());
         Assert.assertEquals(0.5, histogram.getSampleSum(), 0.001);
         Assert.assertEquals(2, histogram.getBuckets().size());
-        Assert.assertEquals(0.25, histogram.getBuckets().get(0).getUpperBound(), 0.01);
-        Assert.assertEquals(100, histogram.getBuckets().get(0).getCumulativeCount());
-        Assert.assertEquals(1.0, histogram.getBuckets().get(1).getUpperBound(), 0.01);
-        Assert.assertEquals(200, histogram.getBuckets().get(1).getCumulativeCount());
+        Assert.assertEquals(0.25, histogram.getBuckets().get(0).upperBound(), 0.01);
+        Assert.assertEquals(100, histogram.getBuckets().get(0).cumulativeCount());
+        Assert.assertEquals(1.0, histogram.getBuckets().get(1).upperBound(), 0.01);
+        Assert.assertEquals(200, histogram.getBuckets().get(1).cumulativeCount());
         Assert.assertEquals(1, histogram.getLabels().size());
         Assert.assertEquals("111", histogram.getLabels().get("one"));
     }

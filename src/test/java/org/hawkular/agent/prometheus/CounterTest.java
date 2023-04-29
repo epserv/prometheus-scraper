@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus;
+package org.hawkular.agent.prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class CounterTest {
         Counter counter;
 
         try {
-            counter = new Counter.Builder().build();
+            new Counter.Builder().build();
             Assert.fail("Should have thrown exception because name is not set");
         } catch (IllegalArgumentException expected) {
         }

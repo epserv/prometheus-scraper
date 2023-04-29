@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package prometheus;
+package org.hawkular.agent.prometheus;
 
 import java.io.File;
 import java.io.InputStream;
@@ -23,11 +23,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.epserv.prometheus.PrometheusDataFormat;
 import com.github.epserv.prometheus.PrometheusScraper;
 import org.jboss.logging.Logger.Level;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import com.github.epserv.prometheus.binary.BinaryPrometheusMetricDataParser;
@@ -59,7 +61,7 @@ public class BinaryPrometheusParserTest {
         final AtomicInteger familyCount = new AtomicInteger(0);
         final AtomicInteger fullCount = new AtomicInteger(0);
         PrometheusMetricsWalker walker = new LoggingPrometheusMetricsWalker(Level.INFO) {
-            public void walkMetricFamily(com.github.epserv.prometheus.types.MetricFamily family, int index) {
+            public void walkMetricFamily(com.github.epserv.prometheus.types.@NotNull MetricFamily family, int index) {
                 super.walkMetricFamily(family, index);
                 familyCount.incrementAndGet();
                 fullCount.addAndGet(family.getMetrics().size());
@@ -67,7 +69,7 @@ public class BinaryPrometheusParserTest {
         };
 
         try (InputStream testData = this.getClass().getClassLoader().getResourceAsStream("prometheus.data")) {
-            new BinaryPrometheusMetricsProcessor(testData, walker).walk();
+            new BinaryPrometheusMetricsProcessor(Objects.requireNonNull(testData), walker).walk();
         }
         Assert.assertEquals(metricFamilies.size(), familyCount.get());
         Assert.assertEquals(126, fullCount.get());
@@ -75,7 +77,7 @@ public class BinaryPrometheusParserTest {
 
     @Test
     public void testGetMetricsFromUrlAndFile() throws Exception {
-        URL testDataUrl = this.getClass().getClassLoader().getResource("prometheus.data");
+        URL testDataUrl = Objects.requireNonNull(this.getClass().getClassLoader().getResource("prometheus.data"));
         File testDataFile;
         try {
             testDataFile = new File(testDataUrl.toURI());
@@ -87,7 +89,7 @@ public class BinaryPrometheusParserTest {
         final AtomicInteger familyCount = new AtomicInteger(0);
         final AtomicInteger fullCount = new AtomicInteger(0);
         PrometheusMetricsWalker walker = new LoggingPrometheusMetricsWalker(Level.INFO) {
-            public void walkMetricFamily(com.github.epserv.prometheus.types.MetricFamily family, int index) {
+            public void walkMetricFamily(com.github.epserv.prometheus.types.@NotNull MetricFamily family, int index) {
                 super.walkMetricFamily(family, index);
                 familyCount.incrementAndGet();
                 fullCount.addAndGet(family.getMetrics().size());
@@ -110,7 +112,6 @@ public class BinaryPrometheusParserTest {
 
         // test the scrape() method
         scraper = new PrometheusScraper(testDataUrl, PrometheusDataFormat.BINARY);
-        List<com.github.epserv.prometheus.types.MetricFamily> allFamilies = scraper.scrape();
-        Assert.assertEquals(71, allFamilies.size());
+        Assert.assertEquals(71, scraper.scrape().size());
     }
 }

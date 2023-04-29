@@ -1,5 +1,8 @@
 package com.github.epserv.prometheus;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -12,7 +15,7 @@ import java.io.InputStream;
  * @param <T> the metric family object type that the parser produces
  */
 public abstract class PrometheusMetricDataParser<T> {
-    private InputStream inputStream;
+    private final @NotNull InputStream inputStream;
 
     /**
      * Provides the input stream where the parser will look for metric data.
@@ -20,21 +23,19 @@ public abstract class PrometheusMetricDataParser<T> {
      *
      * @param inputStream the stream where the metric data can be found
      */
-    public PrometheusMetricDataParser(InputStream inputStream) {
-        if (inputStream == null) {
-            throw new IllegalArgumentException("Stream must not be null");
-        }
+    public PrometheusMetricDataParser(@NotNull InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
-    protected InputStream getInputStream() {
+    @Contract(pure = true)
+    protected @NotNull InputStream getInputStream() {
         return this.inputStream;
     }
 
     /**
      * Reads a single metric family from the Prometheus metric data stream and returns it.
      * Returns null when no more data is in the stream.
-     *
+     * <p>
      * This method is designed to be called several times, each time it returns the next metric family
      * found in the input stream.
      *

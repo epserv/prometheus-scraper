@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Objects;
 
 import com.github.epserv.prometheus.text.TextPrometheusMetricsProcessor;
 import com.github.epserv.prometheus.walkers.CollectorPrometheusMetricsWalker;
@@ -14,6 +15,9 @@ import org.jboss.logging.Logger;
 import com.github.epserv.prometheus.binary.BinaryPrometheusMetricsProcessor;
 import com.github.epserv.prometheus.types.MetricFamily;
 import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Given a Prometheus protocol endpoint, this will scrape the Prometheus data it finds there.
@@ -23,26 +27,36 @@ import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
 public class PrometheusScraper {
     private static final Logger log = Logger.getLogger(PrometheusScraper.class);
 
-    private final URL url;
-    private final PrometheusDataFormat knownDataFormat;
-    private final String authorization;
+    private final @NotNull URL url;
+    private final @Nullable PrometheusDataFormat knownDataFormat;
+    private final @Nullable String authorization;
 
     // see openConnection() for where this is used
     protected static class OpenConnectionDetails {
-        public final InputStream inputStream;
-        public final String contentType;
+        private final @NotNull InputStream inputStream;
+        private final @Nullable String contentType;
 
-        public OpenConnectionDetails(InputStream is, String contentType) {
+        public OpenConnectionDetails(@NotNull InputStream is, @Nullable String contentType) {
             this.inputStream = is;
             this.contentType = contentType;
         }
+
+        @Contract(pure = true)
+        public @NotNull InputStream getInputStream() {
+            return this.inputStream;
+        }
+
+        @Contract(pure = true)
+        public @Nullable String getContentType() {
+            return this.contentType;
+        }
     }
 
-    public PrometheusScraper(String host, int port, String context) throws MalformedURLException {
+    public PrometheusScraper(@Nullable String host, int port, @Nullable String context) throws MalformedURLException {
         this(host, port, context, null);
     }
 
-    public PrometheusScraper(String host, int port, String context, String authorization) throws MalformedURLException {
+    public PrometheusScraper(@Nullable String host, int port, @Nullable String context, @Nullable String authorization) throws MalformedURLException {
         if (host == null) {
             host = "127.0.0.1";
         }
@@ -58,7 +72,7 @@ public class PrometheusScraper {
         log.debugf("Will scrape Prometheus data from URL [%s]", this.url);
     }
 
-    public PrometheusScraper(URL url) {
+    public PrometheusScraper(@NotNull URL url) {
         this(url, null);
     }
 
@@ -75,7 +89,7 @@ public class PrometheusScraper {
      * @param dataFormat the data format of the metric data found at the URL, or null if
      *                   the URL endpoint can provide it for us via content negotiation.
      */
-    public PrometheusScraper(URL url, PrometheusDataFormat dataFormat) {
+    public PrometheusScraper(@NotNull URL url, @Nullable PrometheusDataFormat dataFormat) {
         this(url, dataFormat, null);
     }
 
@@ -93,15 +107,12 @@ public class PrometheusScraper {
      *                   the URL endpoint can provide it for us via content negotiation.
      * @param authorization the <code>Authorization</code> header value, or null
      */
-    public PrometheusScraper(URL url, PrometheusDataFormat dataFormat, String authorization) {
-        if (url == null) {
-            throw new IllegalArgumentException("URL must not be null");
-        }
+    public PrometheusScraper(@NotNull URL url, @Nullable PrometheusDataFormat dataFormat, @Nullable String authorization) {
         this.url = url;
         this.knownDataFormat = dataFormat;
         this.authorization = authorization;
         log.debugf("Will scrape Prometheus data from URL [%s] with data format [%s]",
-                this.url, (this.knownDataFormat == null) ? "<TBD>" : this.knownDataFormat);
+                this.url, this.knownDataFormat == null ? "<TBD>" : this.knownDataFormat);
     }
 
     /**
@@ -111,14 +122,7 @@ public class PrometheusScraper {
      * @param file the file to scrape
      * @param dataFormat the format of the metric data in the file.
      */
-    public PrometheusScraper(File file, PrometheusDataFormat dataFormat) {
-        if (file == null) {
-            throw new IllegalArgumentException("File must not be null");
-        }
-        if (dataFormat == null) {
-            throw new IllegalArgumentException("Must provide the content type for the file");
-        }
-
+    public PrometheusScraper(@NotNull File file, @NotNull PrometheusDataFormat dataFormat) {
         try {
             this.url = file.toURI().toURL();
         } catch (MalformedURLException e) {
@@ -128,8 +132,7 @@ public class PrometheusScraper {
         this.knownDataFormat = dataFormat;
         this.authorization = null;
 
-        log.debugf("Will scrape Prometheus data from file [%s] with data format [%s]", this.url,
-                this.knownDataFormat);
+        log.debugf("Will scrape Prometheus data from file [%s] with data format [%s]", this.url, this.knownDataFormat);
     }
 
     /**
@@ -138,29 +141,24 @@ public class PrometheusScraper {
      * @return all metric data found at the endpoint
      * @throws IOException if failed to scrape data
      */
-    public List<MetricFamily> scrape() throws IOException {
+    public @NotNull List<@NotNull MetricFamily> scrape() throws IOException {
         CollectorPrometheusMetricsWalker collector = new CollectorPrometheusMetricsWalker();
         scrape(collector);
-        return collector.getAllMetricFamilies();
+        return Objects.requireNonNull(collector.getAllMetricFamilies(), "collector.getAllMetricFamilies() cannot be null");
     }
 
-    public void scrape(PrometheusMetricsWalker walker) throws IOException {
+    public void scrape(@NotNull PrometheusMetricsWalker walker) throws IOException {
         OpenConnectionDetails connectionDetails = openConnection(this.url);
-        if (connectionDetails == null || connectionDetails.inputStream == null) {
-            throw new IOException("Failed to open the connection to the Prometheus endpoint");
-        }
-
-        try (InputStream inputStream = connectionDetails.inputStream) {
-            String contentType = connectionDetails.contentType;
+        try (InputStream inputStream = connectionDetails.getInputStream()) {
+            String contentType = connectionDetails.getContentType();
 
             // if we were given a content type - we use it always. If we were not given a content type,
             // then use the one given to the constructor (if one was given).
-            if (contentType == null || contentType.contains("unknown")) {
-                contentType = this.knownDataFormat.getContentType();
+            if ((contentType == null || contentType.contains("unknown"))) {
+                contentType = this.knownDataFormat == null ? "text/plain" : this.knownDataFormat.getContentType();
             }
 
             PrometheusMetricsProcessor<?> processor;
-
             if (contentType.contains("application/vnd.google.protobuf")) {
                 processor = new BinaryPrometheusMetricsProcessor(inputStream, walker);
             } else if (contentType.contains("text/plain")) {
@@ -181,8 +179,9 @@ public class PrometheusScraper {
      *
      * @return binary format content type
      */
-    protected String getBinaryFormatContentType() {
-        return "application/vnd.google.protobuf; proto=io.prometheus.client.MetricFamily; encoding=delimited";
+    @Contract(pure = true)
+    protected @NotNull String getBinaryFormatContentType() {
+        return PrometheusDataFormat.BINARY.getContentType();
     }
 
     /**
@@ -191,8 +190,9 @@ public class PrometheusScraper {
      *
      * @return text format content type
      */
-    protected String getTextFormatContentType() {
-        return "text/plain; version 0.0.4";
+    @Contract(pure = true)
+    protected @NotNull String getTextFormatContentType() {
+        return PrometheusDataFormat.TEXT.getContentType();
     }
 
     /**
@@ -213,7 +213,8 @@ public class PrometheusScraper {
      *
      * @throws IOException if the connection could not be opened
      */
-    protected OpenConnectionDetails openConnection(URL endpointUrl) throws IOException {
+    @Contract("_ -> new")
+    protected @NotNull OpenConnectionDetails openConnection(@NotNull URL endpointUrl) throws IOException {
         URLConnection conn = endpointUrl.openConnection();
         conn.setRequestProperty("Accept", getBinaryFormatContentType());
         if (this.authorization != null) conn.setRequestProperty("Authorization", this.authorization);

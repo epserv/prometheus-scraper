@@ -8,13 +8,15 @@ import com.github.epserv.prometheus.types.Gauge;
 import com.github.epserv.prometheus.types.Histogram;
 import com.github.epserv.prometheus.types.MetricFamily;
 import com.github.epserv.prometheus.types.Summary;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This simply collects all metrics in all families and provides a list to the families.
  */
 public class CollectorPrometheusMetricsWalker implements PrometheusMetricsWalker {
 
-    private List<MetricFamily> finishedList;
+    private List<@NotNull MetricFamily> finishedList;
     private boolean finished;
 
     /**
@@ -28,8 +30,8 @@ public class CollectorPrometheusMetricsWalker implements PrometheusMetricsWalker
      * @return if this walker has finished processing all metric families, this will return the list of the
      *         metric families processed. If the walker hasn't finished yet, null is returned.
      */
-    public List<MetricFamily> getAllMetricFamilies() {
-        return (finished) ? finishedList : null;
+    public @Nullable List<@NotNull MetricFamily> getAllMetricFamilies() {
+        return finished ? finishedList : null;
     }
 
     @Override
@@ -44,23 +46,23 @@ public class CollectorPrometheusMetricsWalker implements PrometheusMetricsWalker
     }
 
     @Override
-    public void walkMetricFamily(MetricFamily family, int index) {
+    public void walkMetricFamily(@NotNull MetricFamily family, int index) {
         finishedList.add(family);
     }
 
     @Override
-    public void walkCounterMetric(MetricFamily family, Counter metric, int index) {
+    public void walkCounterMetric(@NotNull MetricFamily family, @NotNull Counter metric, int index) {
     }
 
     @Override
-    public void walkGaugeMetric(MetricFamily family, Gauge metric, int index) {
+    public void walkGaugeMetric(@NotNull MetricFamily family, @NotNull Gauge metric, int index) {
     }
 
     @Override
-    public void walkSummaryMetric(MetricFamily family, Summary metric, int index) {
+    public void walkSummaryMetric(@NotNull MetricFamily family, @NotNull Summary metric, int index) {
     }
 
     @Override
-    public void walkHistogramMetric(MetricFamily family, Histogram metric, int index) {
+    public void walkHistogramMetric(@NotNull MetricFamily family, @NotNull Histogram metric, int index) {
     }
 }

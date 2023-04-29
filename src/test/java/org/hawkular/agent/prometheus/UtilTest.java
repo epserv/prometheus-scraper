@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus;
+package org.hawkular.agent.prometheus;
 
 import com.github.epserv.prometheus.Util;
 import org.junit.Assert;

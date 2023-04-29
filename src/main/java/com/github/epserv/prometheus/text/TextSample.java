@@ -11,7 +11,7 @@ import com.github.epserv.prometheus.types.Metric;
  */
 public class TextSample extends Metric {
 
-    public static class Builder extends Metric.Builder<Builder> {
+    public static class Builder extends Metric.Builder<TextSample, Builder> {
         private String value;
         private String line;
 
@@ -45,7 +45,7 @@ public class TextSample extends Metric {
 
     /**
      * This is the line of text in the text data where this sample came from.
-     * This can be used for debugging purposes so you know what the sample
+     * This can be used for debugging purposes, so you know what the sample
      * looked like before being parsed.
      *
      * @return the sample text line

@@ -8,7 +8,7 @@ import com.github.epserv.prometheus.Util;
 
 public class Histogram extends Metric {
 
-    public static class Builder extends Metric.Builder<Builder> {
+    public static class Builder extends Metric.Builder<Histogram, Builder> {
         private long sampleCount = 0;
         private double sampleSum = Double.NaN;
         private List<Bucket> buckets;
@@ -44,23 +44,7 @@ public class Histogram extends Metric {
         }
     }
 
-    public static class Bucket {
-        private final double upperBound;
-        private final long cumulativeCount;
-
-        public Bucket(double upperBound, long cumulativeCount) {
-            this.upperBound = upperBound;
-            this.cumulativeCount = cumulativeCount;
-        }
-
-        public double getUpperBound() {
-            return upperBound;
-        }
-
-        public long getCumulativeCount() {
-            return cumulativeCount;
-        }
-
+    public record Bucket(double upperBound, long cumulativeCount) {
         @Override
         public String toString() {
             return String.format("%s:%d", Util.convertDoubleToString(upperBound), cumulativeCount);

@@ -8,7 +8,7 @@ import io.prometheus.client.Metrics;
 import io.prometheus.client.Metrics.MetricFamily;
 
 /**
- * Provides a method that can scrape Permetheus binary metric data from input streams.
+ * Provides a method that can scrape Prometheus binary metric data from input streams.
  */
 public class BinaryPrometheusMetricDataParser extends PrometheusMetricDataParser<MetricFamily> {
 

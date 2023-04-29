@@ -2,7 +2,7 @@ package com.github.epserv.prometheus.types;
 
 public class Counter extends Metric {
 
-    public static class Builder extends Metric.Builder<Builder> {
+    public static class Builder extends Metric.Builder<Counter, Builder> {
         private double value = Double.NaN;
 
         public Counter build() {

@@ -14,22 +14,26 @@ import io.prometheus.client.Metrics.Metric;
 import io.prometheus.client.Metrics.MetricFamily;
 import io.prometheus.client.Metrics.Quantile;
 import io.prometheus.client.Metrics.Summary;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This will iterate over a list of Prometheus metrics that are given as binary protocol buffer data.
  */
 public class BinaryPrometheusMetricsProcessor extends PrometheusMetricsProcessor<MetricFamily> {
-    public BinaryPrometheusMetricsProcessor(InputStream inputStream, PrometheusMetricsWalker theWalker) {
+    public BinaryPrometheusMetricsProcessor(@NotNull InputStream inputStream, @NotNull PrometheusMetricsWalker theWalker) {
         super(inputStream, theWalker);
     }
 
     @Override
-    public BinaryPrometheusMetricDataParser createPrometheusMetricDataParser() {
+    @Contract("-> new")
+    public @NotNull BinaryPrometheusMetricDataParser createPrometheusMetricDataParser() {
         return new BinaryPrometheusMetricDataParser(getInputStream());
     }
 
     @Override
-    protected com.github.epserv.prometheus.types.MetricFamily convert(MetricFamily family) {
+    @Contract("_ -> new")
+    protected com.github.epserv.prometheus.types.@NotNull MetricFamily convert(@NotNull MetricFamily family) {
         com.github.epserv.prometheus.types.MetricFamily.Builder convertedFamilyBuilder;
         MetricType convertedFamilyType = MetricType.valueOf(family.getType().name());
 
@@ -39,15 +43,13 @@ public class BinaryPrometheusMetricsProcessor extends PrometheusMetricsProcessor
         convertedFamilyBuilder.setType(convertedFamilyType);
 
         for (Metric metric : family.getMetricList()) {
-            com.github.epserv.prometheus.types.Metric.Builder<?> convertedMetricBuilder = null;
+            com.github.epserv.prometheus.types.Metric.Builder<?, ?> convertedMetricBuilder = null;
             switch (convertedFamilyType) {
                 case COUNTER:
-                    convertedMetricBuilder = new Counter.Builder()
-                            .setValue(metric.getCounter().getValue());
+                    convertedMetricBuilder = new Counter.Builder().setValue(metric.getCounter().getValue());
                     break;
                 case GAUGE:
-                    convertedMetricBuilder = new Gauge.Builder()
-                            .setValue(metric.getGauge().getValue());
+                    convertedMetricBuilder = new Gauge.Builder().setValue(metric.getGauge().getValue());
                     break;
                 case SUMMARY:
                     Summary summary = metric.getSummary();
@@ -56,8 +58,7 @@ public class BinaryPrometheusMetricsProcessor extends PrometheusMetricsProcessor
                     hqList = new ArrayList<>(pqList.size());
                     for (Quantile pq : pqList) {
                         com.github.epserv.prometheus.types.Summary.Quantile hq;
-                        hq = new com.github.epserv.prometheus.types.Summary.Quantile(
-                                pq.getQuantile(), pq.getValue());
+                        hq = new com.github.epserv.prometheus.types.Summary.Quantile(pq.getQuantile(), pq.getValue());
                         hqList.add(hq);
                     }
                     convertedMetricBuilder = new com.github.epserv.prometheus.types.Summary.Builder()
@@ -67,28 +68,30 @@ public class BinaryPrometheusMetricsProcessor extends PrometheusMetricsProcessor
                     break;
                 case HISTOGRAM:
                     /* NO HISTOGRAM SUPPORT IN PROMETHEUS JAVA MODEL API 0.0.2. Uncomment when 0.0.3 is released
-                    Histogram histo = metric.getHistogram();
-                    List<Bucket> pbList = histo.getBucketList();
-                    List<prometheus.types.Histogram.Bucket> hbList;
+                    Histogram histogram = metric.getHistogram();
+                    List<Bucket> pbList = histogram.getBucketList();
+                    List<com.github.epserv.prometheus.types.Histogram.Bucket> hbList;
                     hbList = new ArrayList<>(pbList.size());
                     for (Bucket pb : pbList) {
-                        prometheus.types.Histogram.Bucket hb;
-                        hb = new prometheus.types.Histogram.Bucket(pb.getUpperBound(),
+                        com.github.epserv.prometheus.types.Histogram.Bucket hb;
+                        hb = new com.github.epserv.prometheus.types.Histogram.Bucket(pb.getUpperBound(),
                                 pb.getCumulativeCount());
                         hbList.add(hb);
                     }
-                    convertedMetricBuilder = new prometheus.types.Histogram.Builder()
+                    convertedMetricBuilder = new com.github.epserv.prometheus.types.Histogram.Builder()
                             .setSampleCount(metric.getHistogram().getSampleCount())
                             .setSampleSum(metric.getHistogram().getSampleSum())
                             .addBuckets(hbList);
                     */
                     break;
             }
-            convertedMetricBuilder.setName(family.getName());
-            for (LabelPair labelPair : metric.getLabelList()) {
-                convertedMetricBuilder.addLabel(labelPair.getName(), labelPair.getValue());
+            if (convertedMetricBuilder != null) {
+                convertedMetricBuilder.setName(family.getName());
+                for (LabelPair labelPair : metric.getLabelList()) {
+                    convertedMetricBuilder.addLabel(labelPair.getName(), labelPair.getValue());
+                }
+                convertedFamilyBuilder.addMetric(convertedMetricBuilder.build());
             }
-            convertedFamilyBuilder.addMetric(convertedMetricBuilder.build());
         }
 
         return convertedFamilyBuilder.build();

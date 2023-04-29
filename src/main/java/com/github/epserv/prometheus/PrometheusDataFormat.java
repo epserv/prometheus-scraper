@@ -1,19 +1,23 @@
 package com.github.epserv.prometheus;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * The supported Prometheus data formats.
  */
 public enum PrometheusDataFormat {
-    TEXT("plain/text"), //
+    TEXT("text/plain"),
     BINARY("application/vnd.google.protobuf; proto=io.prometheus.client.MetricFamily; encoding=delimited");
 
-    private final String contentType;
+    private final @NotNull String contentType;
 
-    private PrometheusDataFormat(String contentType) {
+    PrometheusDataFormat(@NotNull String contentType) {
         this.contentType = contentType;
     }
 
-    public String getContentType() {
-        return contentType;
+    @Contract(pure = true)
+    public @NotNull String getContentType() {
+        return this.contentType;
     }
 }

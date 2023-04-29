@@ -7,10 +7,12 @@ import com.github.epserv.prometheus.types.Histogram;
 import com.github.epserv.prometheus.types.MetricFamily;
 import com.github.epserv.prometheus.types.Summary;
 import com.github.epserv.prometheus.types.Gauge;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SimplePrometheusMetricsWalker implements PrometheusMetricsWalker {
 
-    private final URL url;
+    private final @Nullable URL url;
 
     public SimplePrometheusMetricsWalker() {
         this(null);
@@ -21,7 +23,7 @@ public class SimplePrometheusMetricsWalker implements PrometheusMetricsWalker {
      *
      * @param url the protocol endpoint that supplied the Prometheus metric data
      */
-    public SimplePrometheusMetricsWalker(URL url) {
+    public SimplePrometheusMetricsWalker(@Nullable URL url) {
         this.url = url;
     }
 
@@ -40,12 +42,12 @@ public class SimplePrometheusMetricsWalker implements PrometheusMetricsWalker {
     }
 
     @Override
-    public void walkMetricFamily(MetricFamily family, int index) {
+    public void walkMetricFamily(@NotNull MetricFamily family, int index) {
         System.out.printf("* %s (%s): %s\n", family.getName(), family.getType(), family.getHelp());
     }
 
     @Override
-    public void walkCounterMetric(MetricFamily family, Counter metric, int index) {
+    public void walkCounterMetric(@NotNull MetricFamily family, @NotNull Counter metric, int index) {
         System.out.printf("  +%2d. %s%s [%f]\n",
                 index,
                 metric.getName(),
@@ -54,7 +56,7 @@ public class SimplePrometheusMetricsWalker implements PrometheusMetricsWalker {
     }
 
     @Override
-    public void walkGaugeMetric(MetricFamily family, Gauge metric, int index) {
+    public void walkGaugeMetric(@NotNull MetricFamily family, @NotNull Gauge metric, int index) {
         System.out.printf("  +%2d. %s%s [%f]\n",
                 index,
                 metric.getName(),
@@ -63,7 +65,7 @@ public class SimplePrometheusMetricsWalker implements PrometheusMetricsWalker {
     }
 
     @Override
-    public void walkSummaryMetric(MetricFamily family, Summary metric, int index) {
+    public void walkSummaryMetric(@NotNull MetricFamily family, @NotNull Summary metric, int index) {
         System.out.printf("  +%2d. %s%s [%d/%f] {%s}\n",
                 index,
                 metric.getName(),
@@ -74,7 +76,7 @@ public class SimplePrometheusMetricsWalker implements PrometheusMetricsWalker {
     }
 
     @Override
-    public void walkHistogramMetric(MetricFamily family, Histogram metric, int index) {
+    public void walkHistogramMetric(@NotNull MetricFamily family, @NotNull Histogram metric, int index) {
         System.out.printf("  +%2d. %s%s [%d/%f] {%s}\n",
                 index,
                 metric.getName(),

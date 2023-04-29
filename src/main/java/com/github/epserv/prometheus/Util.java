@@ -1,8 +1,10 @@
 package com.github.epserv.prometheus;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Util {
 
-    public static double convertStringToDouble(String valueString) {
+    public static double convertStringToDouble(@NotNull String valueString) {
         double doubleValue;
         if (valueString.equalsIgnoreCase("NaN")) {
             doubleValue = Double.NaN;
@@ -11,7 +13,7 @@ public class Util {
         } else if (valueString.equalsIgnoreCase("-Inf")) {
             doubleValue = Double.NEGATIVE_INFINITY;
         } else {
-            doubleValue = Double.valueOf(valueString).doubleValue();
+            doubleValue = Double.parseDouble(valueString);
         }
         return doubleValue;
     }

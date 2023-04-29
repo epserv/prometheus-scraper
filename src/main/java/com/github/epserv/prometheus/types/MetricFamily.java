@@ -1,5 +1,9 @@
 package com.github.epserv.prometheus.types;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,24 +17,24 @@ public class MetricFamily {
         private String name;
         private String help;
         private MetricType type;
-        private List<Metric> metrics;
+        private List<@NotNull Metric> metrics;
 
-        public Builder setName(String name) {
+        public Builder setName(@NotNull String name) {
             this.name = name;
             return this;
         }
 
-        public Builder setHelp(String help) {
+        public Builder setHelp(@Nullable String help) {
             this.help = help;
             return this;
         }
 
-        public Builder setType(MetricType type) {
+        public Builder setType(@NotNull MetricType type) {
             this.type = type;
             return this;
         }
 
-        public Builder addMetric(Metric metric) {
+        public Builder addMetric(@NotNull Metric metric) {
             if (metrics == null) {
                 metrics = new ArrayList<>();
             }
@@ -38,41 +42,27 @@ public class MetricFamily {
             return this;
         }
 
-        public MetricFamily build() {
+        @Contract("-> new")
+        public @NotNull MetricFamily build() {
             return new MetricFamily(this);
         }
     }
 
-    private final String name;
-    private final String help;
-    private final MetricType type;
-    private final List<Metric> metrics;
+    private final @NotNull String name;
+    private final @Nullable String help;
+    private final @NotNull MetricType type;
+    private final @Nullable List<@NotNull Metric> metrics;
 
-    protected MetricFamily(Builder builder) {
-        if (builder.name == null) {
-            throw new IllegalArgumentException("Need to set name");
-        }
-        if (builder.type == null) {
-            throw new IllegalArgumentException("Need to set type");
-        }
+    protected MetricFamily(@NotNull Builder builder) {
+        if (builder.name == null) throw new IllegalArgumentException("Need to set name");
+        if (builder.type == null) throw new IllegalArgumentException("Need to set type");
 
-        Class<? extends Metric> expectedMetricClassType;
-        switch (builder.type) {
-            case COUNTER:
-                expectedMetricClassType = Counter.class;
-                break;
-            case GAUGE:
-                expectedMetricClassType = Gauge.class;
-                break;
-            case SUMMARY:
-                expectedMetricClassType = Summary.class;
-                break;
-            case HISTOGRAM:
-                expectedMetricClassType = Histogram.class;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid type: " + builder.type);
-        }
+        Class<? extends Metric> expectedMetricClassType = switch (builder.type) {
+            case COUNTER -> Counter.class;
+            case GAUGE -> Gauge.class;
+            case SUMMARY -> Summary.class;
+            case HISTOGRAM -> Histogram.class;
+        };
 
         // make sure all the metrics in the family are of the expected type
         if (builder.metrics != null && !builder.metrics.isEmpty()) {
@@ -93,19 +83,19 @@ public class MetricFamily {
         this.metrics = builder.metrics;
     }
 
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
 
-    public String getHelp() {
+    public @Nullable String getHelp() {
         return help;
     }
 
-    public MetricType getType() {
+    public @NotNull MetricType getType() {
         return type;
     }
 
-    public List<Metric> getMetrics() {
+    public @NotNull List<@NotNull Metric> getMetrics() {
         if (metrics == null) {
             return Collections.emptyList();
         }

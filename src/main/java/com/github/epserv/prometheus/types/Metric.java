@@ -1,5 +1,9 @@
 package com.github.epserv.prometheus.types;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,7 +13,7 @@ import java.util.Map;
  */
 public abstract class Metric {
 
-    public abstract static class Builder<B extends Builder<?>> {
+    public abstract static class Builder<T extends Metric, B extends Builder<T, B>> {
         private String name;
         private Map<String, String> labels;
 
@@ -34,26 +38,27 @@ public abstract class Metric {
             return (B) this;
         }
 
-        public abstract <T extends Metric> T build();
+        public abstract T build();
     }
 
-    private final String name;
-    private final Map<String, String> labels;
+    private final @NotNull String name;
+    private final @Nullable Map<String, String> labels;
 
-    protected Metric(Builder<?> builder) {
-        if (builder.name == null) {
-            throw new IllegalArgumentException("Need to set name");
-        }
+    @Contract(pure = true)
+    protected Metric(@NotNull Builder<?, ?> builder) {
+        if (builder.name == null) throw new IllegalArgumentException("Need to set name");
 
         this.name = builder.name;
         this.labels = builder.labels;
     }
 
-    public String getName() {
+    @Contract(pure = true)
+    public @NotNull String getName() {
         return name;
     }
 
-    public Map<String, String> getLabels() {
+    @Contract(pure = true)
+    public @NotNull Map<String, String> getLabels() {
         if (labels == null) {
             return Collections.emptyMap();
         }

@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package prometheus;
+package org.hawkular.agent.prometheus;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.epserv.prometheus.PrometheusDataFormat;
 import com.github.epserv.prometheus.PrometheusScraper;
 import org.jboss.logging.Logger.Level;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import com.github.epserv.prometheus.text.TextPrometheusMetricDataParser;
@@ -41,16 +43,14 @@ import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
 
 public class TextPrometheusParserTest {
 
-    private List<MetricFamily> parseTestFile(String fileName) throws Exception {
+    private @NotNull List<@NotNull MetricFamily> parseTestFile(String fileName) throws Exception {
         List<MetricFamily> metricFamilies = new ArrayList<>();
 
         try (InputStream testData = getClass().getClassLoader().getResourceAsStream(fileName)) {
-            TextPrometheusMetricDataParser parser = new TextPrometheusMetricDataParser(testData);
+            TextPrometheusMetricDataParser parser = new TextPrometheusMetricDataParser(Objects.requireNonNull(testData));
             while (true) {
                 MetricFamily family = parser.parse();
-                if (family == null) {
-                    break;
-                }
+                if (family == null) break;
                 metricFamilies.add(family);
             }
         }
@@ -119,12 +119,12 @@ public class TextPrometheusParserTest {
         Assert.assertEquals("disk", second.getLabels().get("location"));
         Assert.assertEquals(12345, second.getSampleCount());
         Assert.assertEquals(1.5, second.getSampleSum(), 0.01);
-        Assert.assertEquals(0.50, second.getQuantiles().get(0).getQuantile(), 0.01);
-        Assert.assertEquals(40.0, second.getQuantiles().get(0).getValue(), 0.01);
-        Assert.assertEquals(0.90, second.getQuantiles().get(1).getQuantile(), 0.01);
-        Assert.assertEquals(50.0, second.getQuantiles().get(1).getValue(), 0.01);
-        Assert.assertEquals(0.99, second.getQuantiles().get(2).getQuantile(), 0.01);
-        Assert.assertEquals(60.0, second.getQuantiles().get(2).getValue(), 0.01);
+        Assert.assertEquals(0.50, second.getQuantiles().get(0).quantile(), 0.01);
+        Assert.assertEquals(40.0, second.getQuantiles().get(0).value(), 0.01);
+        Assert.assertEquals(0.90, second.getQuantiles().get(1).quantile(), 0.01);
+        Assert.assertEquals(50.0, second.getQuantiles().get(1).value(), 0.01);
+        Assert.assertEquals(0.99, second.getQuantiles().get(2).quantile(), 0.01);
+        Assert.assertEquals(60.0, second.getQuantiles().get(2).value(), 0.01);
 
     }
 
@@ -144,18 +144,18 @@ public class TextPrometheusParserTest {
         Assert.assertEquals("wotgorilla?", metric.getLabels().get("mylabel"));
         Assert.assertEquals(144320, metric.getSampleCount());
         Assert.assertEquals(53423, metric.getSampleSum(), 0.01);
-        Assert.assertEquals(0.05, metric.getBuckets().get(0).getUpperBound(), 0.001);
-        Assert.assertEquals(24054, metric.getBuckets().get(0).getCumulativeCount());
-        Assert.assertEquals(0.1, metric.getBuckets().get(1).getUpperBound(), 0.001);
-        Assert.assertEquals(33444, metric.getBuckets().get(1).getCumulativeCount());
-        Assert.assertEquals(0.2, metric.getBuckets().get(2).getUpperBound(), 0.001);
-        Assert.assertEquals(100392, metric.getBuckets().get(2).getCumulativeCount());
-        Assert.assertEquals(0.5, metric.getBuckets().get(3).getUpperBound(), 0.001);
-        Assert.assertEquals(129389, metric.getBuckets().get(3).getCumulativeCount());
-        Assert.assertEquals(1.0, metric.getBuckets().get(4).getUpperBound(), 0.001);
-        Assert.assertEquals(133988, metric.getBuckets().get(4).getCumulativeCount());
-        Assert.assertEquals(Double.POSITIVE_INFINITY, metric.getBuckets().get(5).getUpperBound(), 0.001);
-        Assert.assertEquals(144320, metric.getBuckets().get(5).getCumulativeCount());
+        Assert.assertEquals(0.05, metric.getBuckets().get(0).upperBound(), 0.001);
+        Assert.assertEquals(24054, metric.getBuckets().get(0).cumulativeCount());
+        Assert.assertEquals(0.1, metric.getBuckets().get(1).upperBound(), 0.001);
+        Assert.assertEquals(33444, metric.getBuckets().get(1).cumulativeCount());
+        Assert.assertEquals(0.2, metric.getBuckets().get(2).upperBound(), 0.001);
+        Assert.assertEquals(100392, metric.getBuckets().get(2).cumulativeCount());
+        Assert.assertEquals(0.5, metric.getBuckets().get(3).upperBound(), 0.001);
+        Assert.assertEquals(129389, metric.getBuckets().get(3).cumulativeCount());
+        Assert.assertEquals(1.0, metric.getBuckets().get(4).upperBound(), 0.001);
+        Assert.assertEquals(133988, metric.getBuckets().get(4).cumulativeCount());
+        Assert.assertEquals(Double.POSITIVE_INFINITY, metric.getBuckets().get(5).upperBound(), 0.001);
+        Assert.assertEquals(144320, metric.getBuckets().get(5).cumulativeCount());
     }
 
     @Test
@@ -217,7 +217,7 @@ public class TextPrometheusParserTest {
         final AtomicInteger familyCount = new AtomicInteger(0);
         final AtomicInteger fullCount = new AtomicInteger(0);
         PrometheusMetricsWalker walker = new LoggingPrometheusMetricsWalker(Level.INFO) {
-            public void walkMetricFamily(MetricFamily family, int index) {
+            public void walkMetricFamily(@NotNull MetricFamily family, int index) {
                 super.walkMetricFamily(family, index);
                 familyCount.incrementAndGet();
                 fullCount.addAndGet(family.getMetrics().size());
@@ -225,7 +225,7 @@ public class TextPrometheusParserTest {
         };
 
         try (InputStream testData = this.getClass().getClassLoader().getResourceAsStream("prometheus.txt")) {
-            new TextPrometheusMetricsProcessor(testData, walker).walk();
+            new TextPrometheusMetricsProcessor(Objects.requireNonNull(testData), walker).walk();
         }
         Assert.assertEquals(metricFamilies.size(), familyCount.get());
         Assert.assertEquals(127, fullCount.get());
@@ -233,14 +233,14 @@ public class TextPrometheusParserTest {
 
     @Test
     public void testGetMetricsFromUrl() throws Exception {
-        URL testDataUrl = getClass().getClassLoader().getResource("prometheus.txt");
+        URL testDataUrl = Objects.requireNonNull(getClass().getClassLoader().getResource("prometheus.txt"));
         PrometheusScraper scraper = new PrometheusScraper(testDataUrl, PrometheusDataFormat.TEXT);
 
         // walk the data and make sure it has what we expect
         final AtomicInteger familyCount = new AtomicInteger(0);
         final AtomicInteger fullCount = new AtomicInteger(0);
         PrometheusMetricsWalker walker = new LoggingPrometheusMetricsWalker(Level.INFO) {
-            public void walkMetricFamily(MetricFamily family, int index) {
+            public void walkMetricFamily(@NotNull MetricFamily family, int index) {
                 super.walkMetricFamily(family, index);
                 familyCount.incrementAndGet();
                 fullCount.addAndGet(family.getMetrics().size());

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus;
+package org.hawkular.agent.prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class SummaryTest {
         Summary summary;
 
         try {
-            summary = new Summary.Builder().build();
+            new Summary.Builder().build();
             Assert.fail("Should have thrown exception because name is not set");
         } catch (IllegalArgumentException expected) {
         }
@@ -38,10 +38,10 @@ public class SummaryTest {
         Assert.assertEquals(123, summary.getSampleCount());
         Assert.assertEquals(0.5, summary.getSampleSum(), 0.001);
         Assert.assertEquals(2, summary.getQuantiles().size());
-        Assert.assertEquals(0.25, summary.getQuantiles().get(0).getQuantile(), 0.01);
-        Assert.assertEquals(100.1, summary.getQuantiles().get(0).getValue(), 0.01);
-        Assert.assertEquals(0.75, summary.getQuantiles().get(1).getQuantile(), 0.01);
-        Assert.assertEquals(200.2, summary.getQuantiles().get(1).getValue(), 0.01);
+        Assert.assertEquals(0.25, summary.getQuantiles().get(0).quantile(), 0.01);
+        Assert.assertEquals(100.1, summary.getQuantiles().get(0).value(), 0.01);
+        Assert.assertEquals(0.75, summary.getQuantiles().get(1).quantile(), 0.01);
+        Assert.assertEquals(200.2, summary.getQuantiles().get(1).value(), 0.01);
         Assert.assertEquals(1, summary.getLabels().size());
         Assert.assertEquals("111", summary.getLabels().get("one"));
     }

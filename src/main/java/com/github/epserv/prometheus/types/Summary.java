@@ -8,7 +8,7 @@ import com.github.epserv.prometheus.Util;
 
 public class Summary extends Metric {
 
-    public static class Builder extends Metric.Builder<Builder> {
+    public static class Builder extends Metric.Builder<Summary, Builder> {
         private long sampleCount = 0;
         private double sampleSum = Double.NaN;
         private List<Quantile> quantiles;
@@ -44,24 +44,7 @@ public class Summary extends Metric {
         }
     }
 
-    public static class Quantile {
-        private final double quantile;
-        private final double value;
-
-        public Quantile(double quantile, double value) {
-            this.quantile = quantile;
-            this.value = value;
-
-        }
-
-        public double getQuantile() {
-            return quantile;
-        }
-
-        public double getValue() {
-            return value;
-        }
-
+    public record Quantile(double quantile, double value) {
         @Override
         public String toString() {
             return String.format("%s:%s", Util.convertDoubleToString(quantile), Util.convertDoubleToString(value));
