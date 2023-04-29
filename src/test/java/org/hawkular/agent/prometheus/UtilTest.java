@@ -16,6 +16,7 @@
  */
 package prometheus;
 
+import com.github.epserv.prometheus.Util;
 import org.junit.Assert;
 import org.junit.Test;
 

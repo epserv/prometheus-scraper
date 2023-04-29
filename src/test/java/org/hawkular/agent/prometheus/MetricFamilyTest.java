@@ -18,12 +18,12 @@ package prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.Histogram;
-import prometheus.types.MetricFamily;
-import prometheus.types.MetricType;
-import prometheus.types.Summary;
+import com.github.epserv.prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Gauge;
+import com.github.epserv.prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.types.MetricType;
+import com.github.epserv.prometheus.types.Summary;
 
 public class MetricFamilyTest {
     @Test

@@ -1,17 +1,15 @@
-package prometheus.walkers;
+package com.github.epserv.prometheus.walkers;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import prometheus.Util;
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.Histogram;
-import prometheus.types.Histogram.Bucket;
-import prometheus.types.MetricFamily;
-import prometheus.types.Summary;
-import prometheus.types.Summary.Quantile;
+import com.github.epserv.prometheus.Util;
+import com.github.epserv.prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.types.Summary;
+import com.github.epserv.prometheus.types.Gauge;
 
 public class JSONPrometheusMetricsWalker implements PrometheusMetricsWalker {
 
@@ -73,9 +71,9 @@ public class JSONPrometheusMetricsWalker implements PrometheusMetricsWalker {
         outputLabels(metric.getLabels());
         if (!metric.getQuantiles().isEmpty()) {
             System.out.printf("        \"quantiles\":{\n");
-            Iterator<Quantile> iter = metric.getQuantiles().iterator();
+            Iterator<Summary.Quantile> iter = metric.getQuantiles().iterator();
             while (iter.hasNext()) {
-                Quantile quantile = iter.next();
+                Summary.Quantile quantile = iter.next();
                 System.out.printf("          \"%f\":\"%f\"%s\n",
                         quantile.getQuantile(), quantile.getValue(), (iter.hasNext()) ? "," : "");
             }
@@ -96,9 +94,9 @@ public class JSONPrometheusMetricsWalker implements PrometheusMetricsWalker {
         outputLabels(metric.getLabels());
         if (!metric.getBuckets().isEmpty()) {
             System.out.printf("        \"buckets\":{\n");
-            Iterator<Bucket> iter = metric.getBuckets().iterator();
+            Iterator<Histogram.Bucket> iter = metric.getBuckets().iterator();
             while (iter.hasNext()) {
-                Bucket bucket = iter.next();
+                Histogram.Bucket bucket = iter.next();
                 System.out.printf("          \"%f\":\"%d\"%s\n",
                         bucket.getUpperBound(), bucket.getCumulativeCount(), (iter.hasNext()) ? "," : "");
             }

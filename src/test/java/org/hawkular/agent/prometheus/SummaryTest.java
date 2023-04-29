@@ -18,7 +18,7 @@ package prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prometheus.types.Summary;
+import com.github.epserv.prometheus.types.Summary;
 
 public class SummaryTest {
     @Test

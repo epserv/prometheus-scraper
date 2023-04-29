@@ -1,4 +1,4 @@
-package prometheus;
+package com.github.epserv.prometheus;
 
 import java.io.IOException;
 import java.io.InputStream;

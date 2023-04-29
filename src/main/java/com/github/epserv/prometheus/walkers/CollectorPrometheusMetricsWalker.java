@@ -1,13 +1,13 @@
-package prometheus.walkers;
+package com.github.epserv.prometheus.walkers;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.Histogram;
-import prometheus.types.MetricFamily;
-import prometheus.types.Summary;
+import com.github.epserv.prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Gauge;
+import com.github.epserv.prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.types.Summary;
 
 /**
  * This simply collects all metrics in all families and provides a list to the families.

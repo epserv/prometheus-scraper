@@ -1,10 +1,10 @@
-package prometheus.types;
+package com.github.epserv.prometheus.types;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import prometheus.Util;
+import com.github.epserv.prometheus.Util;
 
 public class Summary extends Metric {
 

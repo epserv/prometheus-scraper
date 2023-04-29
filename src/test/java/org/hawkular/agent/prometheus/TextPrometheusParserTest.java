@@ -23,19 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.github.epserv.prometheus.PrometheusDataFormat;
+import com.github.epserv.prometheus.PrometheusScraper;
 import org.jboss.logging.Logger.Level;
 import org.junit.Assert;
 import org.junit.Test;
-import prometheus.text.TextPrometheusMetricDataParser;
-import prometheus.text.TextPrometheusMetricsProcessor;
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.Histogram;
-import prometheus.types.MetricFamily;
-import prometheus.types.MetricType;
-import prometheus.types.Summary;
-import prometheus.walkers.LoggingPrometheusMetricsWalker;
-import prometheus.walkers.PrometheusMetricsWalker;
+import com.github.epserv.prometheus.text.TextPrometheusMetricDataParser;
+import com.github.epserv.prometheus.text.TextPrometheusMetricsProcessor;
+import com.github.epserv.prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Gauge;
+import com.github.epserv.prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.types.MetricType;
+import com.github.epserv.prometheus.types.Summary;
+import com.github.epserv.prometheus.walkers.LoggingPrometheusMetricsWalker;
+import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
 
 public class TextPrometheusParserTest {
 

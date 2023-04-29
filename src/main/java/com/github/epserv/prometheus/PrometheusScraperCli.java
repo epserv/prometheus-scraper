@@ -1,13 +1,13 @@
-package prometheus;
+package com.github.epserv.prometheus;
 
 import java.net.URL;
 
 import org.jboss.logging.Logger.Level;
-import prometheus.walkers.JSONPrometheusMetricsWalker;
-import prometheus.walkers.LoggingPrometheusMetricsWalker;
-import prometheus.walkers.PrometheusMetricsWalker;
-import prometheus.walkers.SimplePrometheusMetricsWalker;
-import prometheus.walkers.XMLPrometheusMetricsWalker;
+import com.github.epserv.prometheus.walkers.JSONPrometheusMetricsWalker;
+import com.github.epserv.prometheus.walkers.LoggingPrometheusMetricsWalker;
+import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
+import com.github.epserv.prometheus.walkers.SimplePrometheusMetricsWalker;
+import com.github.epserv.prometheus.walkers.XMLPrometheusMetricsWalker;
 
 /**
  * This is a command line utility that can scrape a Prometheus protocol endpoint and outputs the metric data it finds.

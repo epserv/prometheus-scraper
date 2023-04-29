@@ -1,4 +1,4 @@
-package prometheus;
+package com.github.epserv.prometheus;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,12 +8,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+import com.github.epserv.prometheus.text.TextPrometheusMetricsProcessor;
+import com.github.epserv.prometheus.walkers.CollectorPrometheusMetricsWalker;
 import org.jboss.logging.Logger;
-import prometheus.binary.BinaryPrometheusMetricsProcessor;
-import prometheus.text.TextPrometheusMetricsProcessor;
-import prometheus.types.MetricFamily;
-import prometheus.walkers.CollectorPrometheusMetricsWalker;
-import prometheus.walkers.PrometheusMetricsWalker;
+import com.github.epserv.prometheus.binary.BinaryPrometheusMetricsProcessor;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
 
 /**
  * Given a Prometheus protocol endpoint, this will scrape the Prometheus data it finds there.

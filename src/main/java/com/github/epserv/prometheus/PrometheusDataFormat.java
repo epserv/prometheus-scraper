@@ -1,4 +1,4 @@
-package prometheus;
+package com.github.epserv.prometheus;
 
 /**
  * The supported Prometheus data formats.

@@ -1,12 +1,12 @@
-package prometheus.types;
+package com.github.epserv.prometheus.types;
 
-public class Gauge extends Metric {
+public class Counter extends Metric {
 
     public static class Builder extends Metric.Builder<Builder> {
         private double value = Double.NaN;
 
-        public Gauge build() {
-            return new Gauge(this);
+        public Counter build() {
+            return new Counter(this);
         }
 
         public Builder setValue(double value) {
@@ -17,7 +17,7 @@ public class Gauge extends Metric {
 
     private final double value;
 
-    public Gauge(Builder builder) {
+    public Counter(Builder builder) {
         super(builder);
         this.value = builder.value;
     }

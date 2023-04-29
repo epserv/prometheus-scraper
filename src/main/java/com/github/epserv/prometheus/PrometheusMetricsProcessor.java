@@ -1,12 +1,10 @@
-package prometheus;
+package com.github.epserv.prometheus;
 
 import java.io.InputStream;
 
+import com.github.epserv.prometheus.types.*;
 import org.jboss.logging.Logger;
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.MetricFamily;
-import prometheus.walkers.PrometheusMetricsWalker;
+import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
 
 /**
  * A processor is responsible for iterating over a collection of metric families found in a specific
@@ -51,7 +49,7 @@ public abstract class PrometheusMetricsProcessor<T> {
             T metricFamily = parser.parse(); // prime the pump
 
             while (metricFamily != null) {
-                prometheus.types.MetricFamily convertedMetricFamily = convert(metricFamily);
+                MetricFamily convertedMetricFamily = convert(metricFamily);
 
                 // let the walker know we are traversing a new family of metrics
                 walker.walkMetricFamily(convertedMetricFamily, familyIndex++);
@@ -59,7 +57,7 @@ public abstract class PrometheusMetricsProcessor<T> {
                 // walk through each metric in the family
                 int metricIndex = 0;
 
-                for (prometheus.types.Metric metric : convertedMetricFamily.getMetrics()) {
+                for (Metric metric : convertedMetricFamily.getMetrics()) {
                     switch (convertedMetricFamily.getType()) {
                         case COUNTER:
                             walker.walkCounterMetric(convertedMetricFamily, (Counter) metric, metricIndex);
@@ -71,12 +69,12 @@ public abstract class PrometheusMetricsProcessor<T> {
 
                         case SUMMARY:
                             walker.walkSummaryMetric(convertedMetricFamily,
-                                    ((prometheus.types.Summary) metric), metricIndex);
+                                    ((Summary) metric), metricIndex);
                             break;
 
                         case HISTOGRAM:
                             walker.walkHistogramMetric(convertedMetricFamily,
-                                    ((prometheus.types.Histogram) metric), metricIndex);
+                                    ((Histogram) metric), metricIndex);
                             break;
                     }
 

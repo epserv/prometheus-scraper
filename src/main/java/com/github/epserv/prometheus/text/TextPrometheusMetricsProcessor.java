@@ -1,10 +1,10 @@
-package prometheus.text;
+package com.github.epserv.prometheus.text;
 
 import java.io.InputStream;
 
-import prometheus.PrometheusMetricsProcessor;
-import prometheus.types.MetricFamily;
-import prometheus.walkers.PrometheusMetricsWalker;
+import com.github.epserv.prometheus.PrometheusMetricsProcessor;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.walkers.PrometheusMetricsWalker;
 
 /**
  * This will iterate over a list of Prometheus metrics that are given as text data.

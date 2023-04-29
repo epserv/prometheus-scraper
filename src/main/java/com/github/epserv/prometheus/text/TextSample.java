@@ -1,6 +1,6 @@
-package prometheus.text;
+package com.github.epserv.prometheus.text;
 
-import prometheus.types.Metric;
+import com.github.epserv.prometheus.types.Metric;
 
 /**
  * This represents a sample as found in the text data. This may or may not represent

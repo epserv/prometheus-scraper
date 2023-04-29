@@ -1,12 +1,12 @@
-package prometheus.walkers;
+package com.github.epserv.prometheus.walkers;
 
 import java.net.URL;
 
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.Histogram;
-import prometheus.types.MetricFamily;
-import prometheus.types.Summary;
+import com.github.epserv.prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.types.Summary;
+import com.github.epserv.prometheus.types.Gauge;
 
 public class SimplePrometheusMetricsWalker implements PrometheusMetricsWalker {
 

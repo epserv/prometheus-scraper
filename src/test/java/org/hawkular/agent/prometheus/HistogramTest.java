@@ -18,7 +18,7 @@ package prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.Histogram;
 
 public class HistogramTest {
     @Test

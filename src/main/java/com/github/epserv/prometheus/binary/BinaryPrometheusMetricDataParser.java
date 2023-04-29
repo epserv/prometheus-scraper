@@ -1,11 +1,11 @@
-package prometheus.binary;
+package com.github.epserv.prometheus.binary;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.github.epserv.prometheus.PrometheusMetricDataParser;
 import io.prometheus.client.Metrics;
 import io.prometheus.client.Metrics.MetricFamily;
-import prometheus.PrometheusMetricDataParser;
 
 /**
  * Provides a method that can scrape Permetheus binary metric data from input streams.

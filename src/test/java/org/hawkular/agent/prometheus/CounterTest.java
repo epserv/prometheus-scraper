@@ -18,7 +18,7 @@ package prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Counter;
 
 public class CounterTest {
     @Test

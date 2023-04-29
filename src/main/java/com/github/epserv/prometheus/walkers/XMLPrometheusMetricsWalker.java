@@ -1,16 +1,14 @@
-package prometheus.walkers;
+package com.github.epserv.prometheus.walkers;
 
 import java.net.URL;
 
-import prometheus.Util;
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.Histogram;
-import prometheus.types.Histogram.Bucket;
-import prometheus.types.MetricFamily;
-import prometheus.types.MetricType;
-import prometheus.types.Summary;
-import prometheus.types.Summary.Quantile;
+import com.github.epserv.prometheus.Util;
+import com.github.epserv.prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Gauge;
+import com.github.epserv.prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.types.MetricType;
+import com.github.epserv.prometheus.types.Summary;
 
 public class XMLPrometheusMetricsWalker implements PrometheusMetricsWalker {
 
@@ -90,7 +88,7 @@ public class XMLPrometheusMetricsWalker implements PrometheusMetricsWalker {
         System.out.printf("      <sum>%s</sum>\n", Util.convertDoubleToString(metric.getSampleSum()));
         if (!metric.getQuantiles().isEmpty()) {
             System.out.printf("      <quantiles>\n");
-            for (Quantile quantile : metric.getQuantiles()) {
+            for (Summary.Quantile quantile : metric.getQuantiles()) {
                 System.out.printf("        <quantile>%s</quantile>\n", quantile);
             }
             System.out.printf("      </quantiles>\n");
@@ -108,7 +106,7 @@ public class XMLPrometheusMetricsWalker implements PrometheusMetricsWalker {
         System.out.printf("      <sum>%s</sum>\n", Util.convertDoubleToString(metric.getSampleSum()));
         if (!metric.getBuckets().isEmpty()) {
             System.out.printf("      <buckets>\n");
-            for (Bucket bucket : metric.getBuckets()) {
+            for (Histogram.Bucket bucket : metric.getBuckets()) {
                 System.out.printf("        <bucket>%s</bucket>\n", bucket);
             }
             System.out.printf("      </bucket>\n");

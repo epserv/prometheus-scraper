@@ -1,4 +1,4 @@
-package prometheus.text;
+package com.github.epserv.prometheus.text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,16 +8,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.epserv.prometheus.PrometheusMetricDataParser;
+import com.github.epserv.prometheus.Util;
 import org.jboss.logging.Logger;
-import prometheus.PrometheusMetricDataParser;
-import prometheus.Util;
-import prometheus.types.Counter;
-import prometheus.types.Gauge;
-import prometheus.types.Histogram;
-import prometheus.types.Metric;
-import prometheus.types.MetricFamily;
-import prometheus.types.MetricType;
-import prometheus.types.Summary;
+import com.github.epserv.prometheus.types.Counter;
+import com.github.epserv.prometheus.types.Gauge;
+import com.github.epserv.prometheus.types.Histogram;
+import com.github.epserv.prometheus.types.Metric;
+import com.github.epserv.prometheus.types.MetricFamily;
+import com.github.epserv.prometheus.types.MetricType;
+import com.github.epserv.prometheus.types.Summary;
 
 /**
  * Provides a method that can scrape Permetheus text metric data from input streams.

@@ -18,7 +18,7 @@ package prometheus;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prometheus.types.Gauge;
+import com.github.epserv.prometheus.types.Gauge;
 
 public class GaugeTest {
     @Test

@@ -1,4 +1,4 @@
-package prometheus.types;
+package com.github.epserv.prometheus.types;
 
 import java.util.ArrayList;
 import java.util.Collections;
