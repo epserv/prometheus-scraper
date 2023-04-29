@@ -25,9 +25,10 @@ public class PrometheusScraper {
 
     private final URL url;
     private final PrometheusDataFormat knownDataFormat;
+    private final String authorization;
 
     // see openConnection() for where this is used
-    protected class OpenConnectionDetails {
+    protected static class OpenConnectionDetails {
         public final InputStream inputStream;
         public final String contentType;
 
@@ -38,6 +39,10 @@ public class PrometheusScraper {
     }
 
     public PrometheusScraper(String host, int port, String context) throws MalformedURLException {
+        this(host, port, context, null);
+    }
+
+    public PrometheusScraper(String host, int port, String context, String authorization) throws MalformedURLException {
         if (host == null) {
             host = "127.0.0.1";
         }
@@ -49,7 +54,8 @@ public class PrometheusScraper {
         }
         this.url = new URL("http", host, port, context);
         this.knownDataFormat = null;
-        log.debugf("Will scrape Permetheus data from URL [%s]", this.url);
+        this.authorization = authorization;
+        log.debugf("Will scrape Prometheus data from URL [%s]", this.url);
     }
 
     public PrometheusScraper(URL url) {
@@ -63,19 +69,38 @@ public class PrometheusScraper {
      * This is useful if you are providing a URL that actually refers to a file in which case
      * the URL connection will not be able to provide a content type.
      *
-     * @see #PrometheusScraperUrl(File, PrometheusDataFormat)
+     * @see #PrometheusScraper(File, PrometheusDataFormat)
      *
      * @param url the URL where the Prometheus metric data is found
      * @param dataFormat the data format of the metric data found at the URL, or null if
      *                   the URL endpoint can provide it for us via content negotiation.
      */
     public PrometheusScraper(URL url, PrometheusDataFormat dataFormat) {
+        this(url, dataFormat, null);
+    }
+
+    /**
+     * This constructor allows you to explicitly indicate what data format is expected.
+     * If the URL cannot provide a content type, this data format will determine what data format
+     * will be assumed. If the URL does provide a content type, the given data format is ignored.
+     * This is useful if you are providing a URL that actually refers to a file in which case
+     * the URL connection will not be able to provide a content type.
+     *
+     * @see #PrometheusScraper(File, PrometheusDataFormat)
+     *
+     * @param url the URL where the Prometheus metric data is found
+     * @param dataFormat the data format of the metric data found at the URL, or null if
+     *                   the URL endpoint can provide it for us via content negotiation.
+     * @param authorization the <code>Authorization</code> header value, or null
+     */
+    public PrometheusScraper(URL url, PrometheusDataFormat dataFormat, String authorization) {
         if (url == null) {
             throw new IllegalArgumentException("URL must not be null");
         }
         this.url = url;
         this.knownDataFormat = dataFormat;
-        log.debugf("Will scrape Permetheus data from URL [%s] with data format [%s]",
+        this.authorization = authorization;
+        log.debugf("Will scrape Prometheus data from URL [%s] with data format [%s]",
                 this.url, (this.knownDataFormat == null) ? "<TBD>" : this.knownDataFormat);
     }
 
@@ -101,8 +126,9 @@ public class PrometheusScraper {
         }
 
         this.knownDataFormat = dataFormat;
+        this.authorization = null;
 
-        log.debugf("Will scrape Permetheus data from file [%s] with data format [%s]", this.url,
+        log.debugf("Will scrape Prometheus data from file [%s] with data format [%s]", this.url,
                 this.knownDataFormat);
     }
 
@@ -172,17 +198,17 @@ public class PrometheusScraper {
     /**
      * This provides a hook for subclasses to be able to connect to the Prometheus endpoint
      * and tell us what the content type is and to give us the actual stream to the data.
-     *
+     * <p>
      * This is useful in case callers need to connect securely to the Prometheus endpoint.
      * Subclasses need to open the secure connection with their specific secure credentials
      * and other security details and return the input stream to the data (as well as its content type).
-     *
+     * <p>
      * If subclasses return a null content type in the returned object the data format passed to this
      * object's constructor will be assumed as the data format in the input stream.
-     *
+     * <p>
      * The default implementation is to simply open an unsecured connection to the URL.
      *
-     * @param url the Prometheus endpoint
+     * @param endpointUrl the Prometheus endpoint
      * @return connection details for the Prometheus endpoint
      *
      * @throws IOException if the connection could not be opened
@@ -190,6 +216,7 @@ public class PrometheusScraper {
     protected OpenConnectionDetails openConnection(URL endpointUrl) throws IOException {
         URLConnection conn = endpointUrl.openConnection();
         conn.setRequestProperty("Accept", getBinaryFormatContentType());
+        if (this.authorization != null) conn.setRequestProperty("Authorization", this.authorization);
         InputStream stream = conn.getInputStream();
         String contentType = conn.getContentType();
         return new OpenConnectionDetails(stream, contentType);
